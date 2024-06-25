@@ -12269,6 +12269,73 @@ var getFavouritesBtn = document.getElementById("getFavouritesBtn");
 var API_KEY = "live_zNFaUmva0IBiQIvu7qkd1QMEJ6fbS20yGEG1lPijYnVEeJUeHknZL9t9IWL6Ol8n";
 
 /**
+ * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
+ */
+/**
+ * 4. Change all of your fetch() functions to axios!
+ * - axios has already been imported for you within index.js.
+ * - If you've done everything correctly up to this point, this should be simple.
+ * - If it is not simple, take a moment to re-evaluate your original code.
+ * - Hint: Axios has the ability to set default headers. Use this to your advantage
+ *   by setting a default header with your API key so that you do not have to
+ *   send it manually with all of your requests! You can also set a default base URL!
+ */
+
+_axios.default.defaults.baseURL = "https://api.thecatapi.com/v1";
+_axios.default.defaults.headers.common["x-api-key"] = API_KEY;
+
+/**
+ * 5. Add axios interceptors to log the time between request and response to the console.
+ * - Hint: you already have access to code that does this!
+ * - Add a console.log statement to indicate when requests begin.
+ * - As an added challenge, try to do this on your own without referencing the lesson material.
+ */
+/**
+ * 7. As a final element of progress indication, add the following to your axios interceptors:
+ * - In your request interceptor, set the body element's cursor style to "progress."
+ * - In your response interceptor, remove the progress cursor style from the body element.
+ */
+var requestStartTime;
+_axios.default.interceptors.request.use(function (config) {
+  document.body.style.cursor = "progress";
+  requestStartTime = Date.now();
+  console.log("Request begun at : ".concat(new Date().toLocaleTimeString()));
+  progressBar.style.width = "0%";
+  return config;
+});
+_axios.default.interceptors.response.use(function (response) {
+  var requestEndTime = Date.now();
+  var duration = requestEndTime - requestStartTime;
+  document.body.style.cursor = "default";
+  console.log("Response received at: ".concat(new Date().toLocaleTimeString(), " (Duration: ").concat(duration, " ms)"));
+  progressBar.style.width = "100%";
+  return response;
+});
+
+/**
+ * 6. Next, we'll create a progress bar to indicate the request is in progress.
+ * - The progressBar element has already been created for you.
+ *  - You need only to modify its "width" style property to align with the request progress.
+ * - In your request interceptor, set the width of the progressBar element to 0%.
+ *  - This is to reset the progress with each request.
+ * - Research the axios onDownloadProgress config option.
+ * - Create a function "updateProgress" that receives a ProgressEvent object.
+ *  - Pass this function to the axios onDownloadProgress config option in your event handler.
+ * - console.log your ProgressEvent object within updateProgess, and familiarize yourself with its structure.
+ *  - Update the progress of the request using the properties you are given.
+ * - Note that we are not downloading a lot of data, so onDownloadProgress will likely only fire
+ *   once or twice per request to this API. This is still a concept worth familiarizing yourself
+ *   with for future projects.
+ */
+
+function updateProgress(event) {
+  if (event.lengthComputable) {
+    var percentCompleted = Math.round(event.loaded * 100 / event.total);
+    console.log(event);
+    progressBar.style.width = "".concat(percentCompleted, "%");
+  }
+}
+/**
  * 1. Create an async function "initialLoad" that does the following:
  * - Retrieve a list of breeds from the cat API using fetch().
  * - Create new <options> for each of these breeds, and append them to breedSelect.
@@ -12280,43 +12347,45 @@ function initialLoad() {
   return _initialLoad.apply(this, arguments);
 }
 function _initialLoad() {
-  _initialLoad = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-    var response, breeds;
-    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-      while (1) switch (_context2.prev = _context2.next) {
+  _initialLoad = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    var response, breeds, initialBreedId;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
         case 0:
-          _context2.prev = 0;
-          _context2.next = 3;
-          return fetch("https://api.thecatapi.com/v1/breeds", {
-            headers: {
-              "x-api-key": API_KEY
-            }
+          _context3.prev = 0;
+          _context3.next = 3;
+          return _axios.default.get("/breeds", {
+            onDownloadProgress: updateProgress
           });
         case 3:
-          response = _context2.sent;
-          _context2.next = 6;
-          return response.json();
-        case 6:
-          breeds = _context2.sent;
-          // console.log(breeds);
+          response = _context3.sent;
+          breeds = response.data; // console.log(breeds);
           breeds.forEach(function (breed) {
             var option = document.createElement("option");
             option.value = breed.id;
             option.textContent = breed.name;
             breedSelect.appendChild(option);
           });
-          console.log(breedSelect);
-          _context2.next = 14;
+          // console.log(breedSelect);
+          if (!(breeds.length > 0)) {
+            _context3.next = 10;
+            break;
+          }
+          initialBreedId = breeds[0].id;
+          _context3.next = 10;
+          return loadBreedData(initialBreedId);
+        case 10:
+          _context3.next = 15;
           break;
-        case 11:
-          _context2.prev = 11;
-          _context2.t0 = _context2["catch"](0);
-          console.log(_context2.t0);
-        case 14:
+        case 12:
+          _context3.prev = 12;
+          _context3.t0 = _context3["catch"](0);
+          console.error("Error Fetching breeds failed", _context3.t0);
+        case 15:
         case "end":
-          return _context2.stop();
+          return _context3.stop();
       }
-    }, _callee2, null, [[0, 11]]);
+    }, _callee3, null, [[0, 12]]);
   }));
   return _initialLoad.apply(this, arguments);
 }
@@ -12335,65 +12404,93 @@ initialLoad();
  * - Each new selection should clear, re-populate, and restart the Carousel.
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
-
+function loadBreedData(_x) {
+  return _loadBreedData.apply(this, arguments);
+}
+function _loadBreedData() {
+  _loadBreedData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(breedId) {
+    var response, breedData, mala, malaData, breed, breedInfo;
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
+        case 0:
+          _context4.prev = 0;
+          _context4.next = 3;
+          return _axios.default.get("/images/search?breed_ids=".concat(breedId, "&limit=10"), {
+            onDownloadProgress: updateProgress
+          });
+        case 3:
+          response = _context4.sent;
+          breedData = response.data; // console.log(breedData);
+          // console.log(breedId);
+          _context4.next = 7;
+          return _axios.default.get("/images/search?breed_ids=mala&limit=10;");
+        case 7:
+          mala = _context4.sent;
+          malaData = mala.data;
+          console.log(malaData);
+          Carousel.clear();
+          infoDump.innerHTML = "";
+          if (!(breedData.length === 0)) {
+            _context4.next = 16;
+            break;
+          }
+          console.error("No images found for the selected breed.");
+          infoDump.innerHTML = "<p>No images available for this breed.</p>";
+          return _context4.abrupt("return");
+        case 16:
+          breed = breedData[0].breeds[0];
+          if (breed) {
+            _context4.next = 21;
+            break;
+          }
+          console.error("No breed information found.");
+          infoDump.innerHTML = "<p>No breed information available.</p>";
+          return _context4.abrupt("return");
+        case 21:
+          breedInfo = document.createElement("div"); // const breed = breedData[0].breeds[0];
+          breedInfo.innerHTML = "<h2>".concat(breed.name, "</h2>\n    <p>").concat(breed.description, "</p>\n    <p><b>Temperament:</b> ").concat(breedData[0].breeds[0].temperament, "</p>\n    <p><b>Origin:</b> ").concat(breed.origin, "</p>\n    <p><b>Life Span:</b> ").concat(breed.life_span, " years</p>\n    <p><b>Weight:</b> ").concat(breed.weight.metric, " kg</p>");
+          infoDump.appendChild(breedInfo);
+          breedData.forEach(function (item, index) {
+            var carouselItem = Carousel.createCarouselItem(item.url, item.breeds[0].name, item.id);
+            Carousel.appendCarousel(carouselItem);
+            // console.log(Carousel);
+          });
+          Carousel.start();
+          // console.log(infoDump);
+          _context4.next = 31;
+          break;
+        case 28:
+          _context4.prev = 28;
+          _context4.t0 = _context4["catch"](0);
+          console.error("Error Fetching breed info. failed", _context4.t0);
+        case 31:
+        case "end":
+          return _context4.stop();
+      }
+    }, _callee4, null, [[0, 28]]);
+  }));
+  return _loadBreedData.apply(this, arguments);
+}
 breedSelect.addEventListener("change", /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
+  var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(event) {
     var breedId;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
-          breedId = e.target.value;
-        case 1:
+          breedId = event.target.value;
+          _context.next = 3;
+          return loadBreedData(breedId);
+        case 3:
         case "end":
           return _context.stop();
       }
     }, _callee);
   }));
-  return function (_x) {
+  return function (_x2) {
     return _ref.apply(this, arguments);
   };
 }());
 
-/**
- * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
- */
-/**
- * 4. Change all of your fetch() functions to axios!
- * - axios has already been imported for you within index.js.
- * - If you've done everything correctly up to this point, this should be simple.
- * - If it is not simple, take a moment to re-evaluate your original code.
- * - Hint: Axios has the ability to set default headers. Use this to your advantage
- *   by setting a default header with your API key so that you do not have to
- *   send it manually with all of your requests! You can also set a default base URL!
- */
-/**
- * 5. Add axios interceptors to log the time between request and response to the console.
- * - Hint: you already have access to code that does this!
- * - Add a console.log statement to indicate when requests begin.
- * - As an added challenge, try to do this on your own without referencing the lesson material.
- */
-
-/**
- * 6. Next, we'll create a progress bar to indicate the request is in progress.
- * - The progressBar element has already been created for you.
- *  - You need only to modify its "width" style property to align with the request progress.
- * - In your request interceptor, set the width of the progressBar element to 0%.
- *  - This is to reset the progress with each request.
- * - Research the axios onDownloadProgress config option.
- * - Create a function "updateProgress" that receives a ProgressEvent object.
- *  - Pass this function to the axios onDownloadProgress config option in your event handler.
- * - console.log your ProgressEvent object within updateProgess, and familiarize yourself with its structure.
- *  - Update the progress of the request using the properties you are given.
- * - Note that we are not downloading a lot of data, so onDownloadProgress will likely only fire
- *   once or twice per request to this API. This is still a concept worth familiarizing yourself
- *   with for future projects.
- */
-
-/**
- * 7. As a final element of progress indication, add the following to your axios interceptors:
- * - In your request interceptor, set the body element's cursor style to "progress."
- * - In your response interceptor, remove the progress cursor style from the body element.
- */
 /**
  * 8. To practice posting data, we'll create a system to "favourite" certain images.
  * - The skeleton of this function has already been created for you.
@@ -12405,7 +12502,7 @@ breedSelect.addEventListener("change", /*#__PURE__*/function () {
  *   you delete that favourite using the API, giving this function "toggle" functionality.
  * - You can call this function by clicking on the heart at the top right of any image.
  */
-function favourite(_x2) {
+function favourite(_x3) {
   return _favourite.apply(this, arguments);
 }
 /**
@@ -12417,6 +12514,80 @@ function favourite(_x2) {
  *    If that isn't in its own function, maybe it should be so you don't have to
  *    repeat yourself in this section.
  */
+function _favourite() {
+  _favourite = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(imgId) {
+    var response, favourites, existingFavourite;
+    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+      while (1) switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.prev = 0;
+          _context5.next = 3;
+          return _axios.default.get("/favourites");
+        case 3:
+          response = _context5.sent;
+          favourites = response.data;
+          existingFavourite = favourites.find(function (fav) {
+            return fav.image_id === imgId;
+          });
+          if (!existingFavourite) {
+            _context5.next = 11;
+            break;
+          }
+          _context5.next = 9;
+          return _axios.default.delete("/favourites/".concat(existingFavourite.id));
+        case 9:
+          _context5.next = 13;
+          break;
+        case 11:
+          _context5.next = 13;
+          return _axios.default.post("/favourites", {
+            image_id: imgId
+          });
+        case 13:
+          _context5.next = 18;
+          break;
+        case 15:
+          _context5.prev = 15;
+          _context5.t0 = _context5["catch"](0);
+          console.error("Error toggling favourite failed", _context5.t0);
+        case 18:
+        case "end":
+          return _context5.stop();
+      }
+    }, _callee5, null, [[0, 15]]);
+  }));
+  return _favourite.apply(this, arguments);
+}
+getFavouritesBtn.addEventListener("click", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+  var response, favourites;
+  return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+    while (1) switch (_context2.prev = _context2.next) {
+      case 0:
+        _context2.prev = 0;
+        _context2.next = 3;
+        return _axios.default.get("/favourites");
+      case 3:
+        response = _context2.sent;
+        favourites = response.data;
+        Carousel.clear();
+        infoDump.innerHTML = "";
+        favourites.forEach(function (fav) {
+          var carouselItem = Carousel.createCarouselItem(fav.image.url, "Favourite Image", fav.image_id);
+          Carousel.appendCarousel(carouselItem);
+        });
+        Carousel.start();
+        _context2.next = 14;
+        break;
+      case 11:
+        _context2.prev = 11;
+        _context2.t0 = _context2["catch"](0);
+        console.error("Error fetching favourites failed", _context2.t0);
+      case 14:
+      case "end":
+        return _context2.stop();
+    }
+  }, _callee2, null, [[0, 11]]);
+})));
 /**
  * 10. Test your site, thoroughly!
  * - What happens when you try to load the Malayan breed?
@@ -12424,18 +12595,6 @@ function favourite(_x2) {
  * - Test other breeds as well. Not every breed has the same data available, so
  *   your code should account for this.
  */
-function _favourite() {
-  _favourite = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(imgId) {
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
-        case 0:
-        case "end":
-          return _context3.stop();
-      }
-    }, _callee3);
-  }));
-  return _favourite.apply(this, arguments);
-}
 },{"./Carousel.js":"Carousel.js","axios":"node_modules/axios/index.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -12461,7 +12620,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49412" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50423" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
