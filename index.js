@@ -11,7 +11,8 @@ const progressBar = document.getElementById("progressBar");
 const getFavouritesBtn = document.getElementById("getFavouritesBtn");
 
 // Step 0: Store your API key here for reference and easy access.
-const API_KEY = "";
+const API_KEY =
+  "live_zNFaUmva0IBiQIvu7qkd1QMEJ6fbS20yGEG1lPijYnVEeJUeHknZL9t9IWL6Ol8n";
 
 /**
  * 1. Create an async function "initialLoad" that does the following:
@@ -21,7 +22,27 @@ const API_KEY = "";
  *  - Each option should display text equal to the name of the breed.
  * This function should execute immediately.
  */
-
+async function initialLoad() {
+  try {
+    const response = await fetch("https://api.thecatapi.com/v1/breeds", {
+      headers: {
+        "x-api-key": API_KEY,
+      },
+    });
+    const breeds = await response.json();
+    // console.log(breeds);
+    breeds.forEach((breed) => {
+      const option = document.createElement("option");
+      option.value = breed.id;
+      option.textContent = breed.name;
+      breedSelect.appendChild(option);
+    });
+    console.log(breedSelect);
+  } catch (error) {
+    console.log(error);
+  }
+}
+initialLoad();
 /**
  * 2. Create an event handler for breedSelect that does the following:
  * - Retrieve information on the selected breed from the cat API using fetch().
@@ -36,6 +57,24 @@ const API_KEY = "";
  * - Each new selection should clear, re-populate, and restart the Carousel.
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
+
+breedSelect.addEventListener("change", async (e) => {
+  const breedId = e.target.value;
+  try {
+    const response = await fetch(
+      `https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}&limit=5`,
+      {
+        headers: {
+          "x-api-key": API_KEY,
+        },
+      }
+    );
+    const breedData = await response.json();
+    console.log(breedData);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 /**
  * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."

@@ -12266,7 +12266,7 @@ var progressBar = document.getElementById("progressBar");
 var getFavouritesBtn = document.getElementById("getFavouritesBtn");
 
 // Step 0: Store your API key here for reference and easy access.
-var API_KEY = "";
+var API_KEY = "live_zNFaUmva0IBiQIvu7qkd1QMEJ6fbS20yGEG1lPijYnVEeJUeHknZL9t9IWL6Ol8n";
 
 /**
  * 1. Create an async function "initialLoad" that does the following:
@@ -12276,7 +12276,51 @@ var API_KEY = "";
  *  - Each option should display text equal to the name of the breed.
  * This function should execute immediately.
  */
-
+function initialLoad() {
+  return _initialLoad.apply(this, arguments);
+}
+function _initialLoad() {
+  _initialLoad = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    var response, breeds;
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          _context2.prev = 0;
+          _context2.next = 3;
+          return fetch("https://api.thecatapi.com/v1/breeds", {
+            headers: {
+              "x-api-key": API_KEY
+            }
+          });
+        case 3:
+          response = _context2.sent;
+          _context2.next = 6;
+          return response.json();
+        case 6:
+          breeds = _context2.sent;
+          // console.log(breeds);
+          breeds.forEach(function (breed) {
+            var option = document.createElement("option");
+            option.value = breed.id;
+            option.textContent = breed.name;
+            breedSelect.appendChild(option);
+          });
+          console.log(breedSelect);
+          _context2.next = 14;
+          break;
+        case 11:
+          _context2.prev = 11;
+          _context2.t0 = _context2["catch"](0);
+          console.log(_context2.t0);
+        case 14:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2, null, [[0, 11]]);
+  }));
+  return _initialLoad.apply(this, arguments);
+}
+initialLoad();
 /**
  * 2. Create an event handler for breedSelect that does the following:
  * - Retrieve information on the selected breed from the cat API using fetch().
@@ -12291,6 +12335,24 @@ var API_KEY = "";
  * - Each new selection should clear, re-populate, and restart the Carousel.
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
+
+breedSelect.addEventListener("change", /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
+    var breedId;
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          breedId = e.target.value;
+        case 1:
+        case "end":
+          return _context.stop();
+      }
+    }, _callee);
+  }));
+  return function (_x) {
+    return _ref.apply(this, arguments);
+  };
+}());
 
 /**
  * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
@@ -12343,7 +12405,7 @@ var API_KEY = "";
  *   you delete that favourite using the API, giving this function "toggle" functionality.
  * - You can call this function by clicking on the heart at the top right of any image.
  */
-function favourite(_x) {
+function favourite(_x2) {
   return _favourite.apply(this, arguments);
 }
 /**
@@ -12363,14 +12425,14 @@ function favourite(_x) {
  *   your code should account for this.
  */
 function _favourite() {
-  _favourite = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(imgId) {
-    return _regeneratorRuntime().wrap(function _callee$(_context) {
-      while (1) switch (_context.prev = _context.next) {
+  _favourite = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(imgId) {
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
         case 0:
         case "end":
-          return _context.stop();
+          return _context3.stop();
       }
-    }, _callee);
+    }, _callee3);
   }));
   return _favourite.apply(this, arguments);
 }
@@ -12399,7 +12461,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55683" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49412" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
