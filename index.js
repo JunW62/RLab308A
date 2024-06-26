@@ -48,6 +48,7 @@ axios.interceptors.request.use((config) => {
   requestStartTime = Date.now();
   console.log(`Request begun at : ${new Date().toLocaleTimeString()}`);
   progressBar.style.width = "0%";
+  progressBar.classList.remove("hidden");
   return config;
 });
 
@@ -61,7 +62,12 @@ axios.interceptors.response.use((response) => {
   progressBar.style.width = "100%";
   return response;
 });
-
+progressBar.addEventListener("transitionend", () => {
+  if (progressBar.style.width === "100%") {
+    progressBar.style.width = "0%";
+    progressBar.classList.add("hidden"); // Hide progress bar
+  }
+});
 /**
  * 6. Next, we'll create a progress bar to indicate the request is in progress.
  * - The progressBar element has already been created for you.
@@ -143,7 +149,7 @@ async function loadBreedData(breedId) {
     // console.log(breedData);
     // console.log(breedId);
 
-    const mala = await axios.get(`/images/search?breed_ids=mala&limit=10;`);
+    const mala = await axios.get(`/images/search?breed_ids=mala&limit=6;`);
     const malaData = mala.data;
     console.log(malaData);
 
@@ -204,7 +210,6 @@ breedSelect.addEventListener("change", async (event) => {
  * - You can call this function by clicking on the heart at the top right of any image.
  */
 export async function favourite(imgId) {
-  // your code here
   try {
     const response = await axios.get("/favourites");
     const favourites = response.data;
@@ -212,8 +217,10 @@ export async function favourite(imgId) {
 
     if (existingFavourite) {
       await axios.delete(`/favourites/${existingFavourite.id}`);
+      return false; // Indicates the item was unfavorited
     } else {
       await axios.post("/favourites", { image_id: imgId });
+      return true; // Indicates the item was favorited
     }
   } catch (error) {
     console.error("Error toggling favourite failed", error);
@@ -244,6 +251,8 @@ getFavouritesBtn.addEventListener("click", async () => {
         "Favourite Image",
         fav.image_id
       );
+      const favButton = carouselItem.querySelector(".favourite-button");
+      favButton.classList.add("favorited");
       Carousel.appendCarousel(carouselItem);
     });
 

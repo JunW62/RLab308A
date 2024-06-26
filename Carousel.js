@@ -10,8 +10,11 @@ export function createCarouselItem(imgSrc, imgAlt, imgId) {
   img.alt = imgAlt;
 
   const favBtn = clone.querySelector(".favourite-button");
+  favBtn.dataset.imgId = imgId;
   favBtn.addEventListener("click", () => {
-    favourite(imgId);
+    favourite(imgId).then(() => {
+      favBtn.classList.toggle("favorited");
+    });
   });
 
   return clone;
@@ -39,7 +42,7 @@ export function start() {
   );
   if (window.matchMedia("(min-width: 768px)").matches) {
     const carousel = new bootstrap.Carousel(multipleCardCarousel, {
-      interval: false
+      interval: false,
     });
     const carouselWidth = $(".carousel-inner")[0].scrollWidth;
     const cardWidth = $(".carousel-item").width();

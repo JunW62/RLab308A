@@ -6929,8 +6929,11 @@ function createCarouselItem(imgSrc, imgAlt, imgId) {
   img.src = imgSrc;
   img.alt = imgAlt;
   var favBtn = clone.querySelector(".favourite-button");
+  favBtn.dataset.imgId = imgId;
   favBtn.addEventListener("click", function () {
-    (0, _index.favourite)(imgId);
+    (0, _index.favourite)(imgId).then(function () {
+      favBtn.classList.toggle("favorited");
+    });
   });
   return clone;
 }
@@ -12301,6 +12304,7 @@ _axios.default.interceptors.request.use(function (config) {
   requestStartTime = Date.now();
   console.log("Request begun at : ".concat(new Date().toLocaleTimeString()));
   progressBar.style.width = "0%";
+  progressBar.classList.remove("hidden");
   return config;
 });
 _axios.default.interceptors.response.use(function (response) {
@@ -12311,7 +12315,12 @@ _axios.default.interceptors.response.use(function (response) {
   progressBar.style.width = "100%";
   return response;
 });
-
+progressBar.addEventListener("transitionend", function () {
+  if (progressBar.style.width === "100%") {
+    progressBar.style.width = "0%";
+    progressBar.classList.add("hidden"); // Hide progress bar
+  }
+});
 /**
  * 6. Next, we'll create a progress bar to indicate the request is in progress.
  * - The progressBar element has already been created for you.
@@ -12423,7 +12432,7 @@ function _loadBreedData() {
           breedData = response.data; // console.log(breedData);
           // console.log(breedId);
           _context4.next = 7;
-          return _axios.default.get("/images/search?breed_ids=mala&limit=10;");
+          return _axios.default.get("/images/search?breed_ids=mala&limit=6;");
         case 7:
           mala = _context4.sent;
           malaData = mala.data;
@@ -12530,31 +12539,32 @@ function _favourite() {
             return fav.image_id === imgId;
           });
           if (!existingFavourite) {
-            _context5.next = 11;
+            _context5.next = 12;
             break;
           }
           _context5.next = 9;
           return _axios.default.delete("/favourites/".concat(existingFavourite.id));
         case 9:
-          _context5.next = 13;
-          break;
-        case 11:
-          _context5.next = 13;
+          return _context5.abrupt("return", false);
+        case 12:
+          _context5.next = 14;
           return _axios.default.post("/favourites", {
             image_id: imgId
           });
-        case 13:
-          _context5.next = 18;
-          break;
+        case 14:
+          return _context5.abrupt("return", true);
         case 15:
-          _context5.prev = 15;
+          _context5.next = 20;
+          break;
+        case 17:
+          _context5.prev = 17;
           _context5.t0 = _context5["catch"](0);
           console.error("Error toggling favourite failed", _context5.t0);
-        case 18:
+        case 20:
         case "end":
           return _context5.stop();
       }
-    }, _callee5, null, [[0, 15]]);
+    }, _callee5, null, [[0, 17]]);
   }));
   return _favourite.apply(this, arguments);
 }
@@ -12573,6 +12583,8 @@ getFavouritesBtn.addEventListener("click", /*#__PURE__*/_asyncToGenerator( /*#__
         infoDump.innerHTML = "";
         favourites.forEach(function (fav) {
           var carouselItem = Carousel.createCarouselItem(fav.image.url, "Favourite Image", fav.image_id);
+          var favButton = carouselItem.querySelector(".favourite-button");
+          favButton.classList.add("favorited");
           Carousel.appendCarousel(carouselItem);
         });
         Carousel.start();
@@ -12620,7 +12632,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50423" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57952" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
