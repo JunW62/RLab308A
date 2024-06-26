@@ -31,11 +31,3 @@ To run this project locally:
 - This project uses The Cat API to fetch breed information and images. You need to obtain an API key from The Cat API and set it in your project.
 
 - Obtain an API key from [The Cat API](https://thecatapi.com) and configure it in the `index.js`
-
-## Codesandbox link
-
-https://codesandbox.io/p/sandbox/ajax-fetch-and-axios-lab-template-forked-4535qm
-
-## DEMO
-
-https://4535qm.csb.app/
