@@ -87,6 +87,7 @@ body {
   background: linear-gradient(to bottom, green, pink);
   border-radius: 15px;
   box-shadow: 0 3px 15px rgba(100, 100, 100, 0.5);
+  padding: 50px;
 }
 @media (max-width: 767px) {
   .card .img-wrapper {
