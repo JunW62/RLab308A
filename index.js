@@ -105,7 +105,7 @@ async function initialLoad() {
       onDownloadProgress: updateProgress,
     });
     const breeds = response.data;
-    // console.log(breeds);
+    console.log(breeds);
     breeds.forEach((breed) => {
       const option = document.createElement("option");
       option.value = breed.id;
@@ -217,10 +217,10 @@ export async function favourite(imgId) {
 
     if (existingFavourite) {
       await axios.delete(`/favourites/${existingFavourite.id}`);
-      return false; // Indicates the item was unfavorited
+      return false;
     } else {
       await axios.post("/favourites", { image_id: imgId });
-      return true; // Indicates the item was favorited
+      return true;
     }
   } catch (error) {
     console.error("Error toggling favourite failed", error);

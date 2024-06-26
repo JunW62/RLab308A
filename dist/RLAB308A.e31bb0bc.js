@@ -12368,7 +12368,8 @@ function _initialLoad() {
           });
         case 3:
           response = _context3.sent;
-          breeds = response.data; // console.log(breeds);
+          breeds = response.data;
+          console.log(breeds);
           breeds.forEach(function (breed) {
             var option = document.createElement("option");
             option.value = breed.id;
@@ -12377,24 +12378,24 @@ function _initialLoad() {
           });
           // console.log(breedSelect);
           if (!(breeds.length > 0)) {
-            _context3.next = 10;
+            _context3.next = 11;
             break;
           }
           initialBreedId = breeds[0].id;
-          _context3.next = 10;
+          _context3.next = 11;
           return loadBreedData(initialBreedId);
-        case 10:
-          _context3.next = 15;
+        case 11:
+          _context3.next = 16;
           break;
-        case 12:
-          _context3.prev = 12;
+        case 13:
+          _context3.prev = 13;
           _context3.t0 = _context3["catch"](0);
           console.error("Error Fetching breeds failed", _context3.t0);
-        case 15:
+        case 16:
         case "end":
           return _context3.stop();
       }
-    }, _callee3, null, [[0, 12]]);
+    }, _callee3, null, [[0, 13]]);
   }));
   return _initialLoad.apply(this, arguments);
 }
@@ -12632,7 +12633,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60665" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50674" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
